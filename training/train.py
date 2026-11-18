@@ -2,22 +2,21 @@ import pandas as pd
 from app.ml.preprocessing import preprocess_dataframe
 
 # ============================================================
-# TODO 0: Perbaiki dulu preprocessing.py
-# ============================================================
-#   - URL_PATTERN: ada "[^\sss]" -> apakah itu typo? cek efeknya ke URL yang ada huruf "s"
-#   - drop_duplicates / dropna: cukup pakai "subject" saja? pikirkan "subject" + "body"
-#   - extract_sender_domain: coba input "Nama <a@b.com>", hasilnya apa?
-#   - sender_domain dibuat tapi tidak masuk kolom akhir. Mau dipakai atau tidak?
-
-
-# ============================================================
 # TODO 1: Load data & cek hasil preprocessing
 # ============================================================
 #   - baca dataset (pd.read_csv), panggil preprocess_dataframe
 #   - print: shape sebelum vs sesudah, df.head(), df["label"].value_counts()
 #   - pertanyaan: apakah kelasnya seimbang? apa dampaknya ke model?
 def load_data(path: str) -> pd.DataFrame:
-    pass
+    df = pd.read_csv("training/dataset/CEAS_08.csv")
+    df_preprocess = preprocess_dataframe(df)
+    print("Sebelum:", df.shape)
+    print("Setelah:", df_preprocess.shape)
+    print(df_preprocess.head())
+    print(df_preprocess["label"].value_counts())
+    print(df_preprocess["label"].value_counts(normalize=True))
+
+    return df
 
 
 # ============================================================
@@ -99,4 +98,4 @@ def predict(subject: str, body: str) -> dict:
 
 
 if __name__ == "__main__":
-    pass
+    df = load_data("training\dataset\CEAS_08.csv")
