@@ -1,7 +1,7 @@
 import re, html
 import pandas as pd
 
-URL_PATTERN = r'(?:https?://|www\.)[^\s/$.?#].[^\sss]*'
+URL_PATTERN = r'(?:https?://|www\.)[^\s/$.?#].[^\s]*'
 EMAIL_PATTERN = r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+"
 HTML_TAG_PATTERN = "<.*?>"
 IP_URL_PATTERN = r"https?://\d{1,3}(?:\.\d{1,3}){3}(?:[:/]|$)"
@@ -29,8 +29,10 @@ def clean_text(text: str) -> str:
 # TODO 4: 
 def extract_sender_domain(sender: str) -> str:
 #   - ambil alamat di dalam <...>, lalu ambil bagian setelah "@"
+    if sender is None or sender != sender:
+        return ""
     if "@" in sender:
-        return sender.rsplit("@", 1)[-1].lower().strip()
+        return sender.rsplit("@", 1)[-1].strip(" >").lower()
 #   - kembalikan "" kalau format tidak valid
     return ""
 
@@ -77,8 +79,8 @@ def build_text_field(row) -> str:
 def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 #   - drop baris dengan body/subject kosong DAN duplikat
-    df = df.dropna(subset=["subject"], how="all").reset_index(drop=True)
-    df = df.drop_duplicates(subset=["subject"], keep="first").reset_index(drop=True)
+    df = df.dropna(subset=["subject","body"], how="all").reset_index(drop=True)
+    df = df.drop_duplicates(subset=["subject", "body"], keep="first").reset_index(drop=True)
 #   - pastikan label bertipe int dan hanya berisi 0/1
     df = df[df["label"].isin([0, 1])]
     df["label"] = df["label"].astype(int)
