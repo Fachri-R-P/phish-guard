@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.model_selection import train_test_split
 from app.ml.preprocessing import preprocess_dataframe
 
 # ============================================================
@@ -16,7 +17,7 @@ def load_data(path: str) -> pd.DataFrame:
     print(df_preprocess["label"].value_counts())
     print(df_preprocess["label"].value_counts(normalize=True))
 
-    return df
+    return df_preprocess
 
 
 # ============================================================
@@ -26,7 +27,27 @@ def load_data(path: str) -> pd.DataFrame:
 #   - kenapa perlu stratify=label?
 #   - kenapa split harus SEBELUM TF-IDF di-fit? (cari: data leakage)
 def split_data(df: pd.DataFrame):
-    pass
+    X = df.drop(columns=['label'])
+    y = df["label"]
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y,
+        test_size=0.2,
+        random_state=42,
+        stratify=y,
+    )
+    print('X_train : ')
+    print(X_train.head())
+    print('')
+    print('X_test : ')
+    print(X_test.head())
+    print('')
+    print('y_train : ')
+    print(y_train.head())
+    print('')
+    print('y_test : ')
+    print(y_test.head())
+
+    return X_train, X_test, y_train, y_test
 
 
 # ============================================================
@@ -98,4 +119,6 @@ def predict(subject: str, body: str) -> dict:
 
 
 if __name__ == "__main__":
-    df = load_data("training\dataset\CEAS_08.csv")
+    df = load_data("training/dataset/CEAS_08.csv")
+    X_train, X_test, y_train, y_test = split_data(df)
+
