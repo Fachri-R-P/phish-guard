@@ -1,6 +1,11 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
 from app.ml.preprocessing import preprocess_dataframe
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.compose import ColumnTransformer
 
 # ============================================================
 # TODO 1: Load data & cek hasil preprocessing
@@ -59,8 +64,32 @@ def split_data(df: pd.DataFrame):
 #   - bungkus semuanya dalam sklearn Pipeline bersama model
 #   - pertanyaan: apakah has_ip_url / has_shortener perlu di-scale?
 def build_pipeline():
-    pass
+    text_pipeline = Pipeline([
+        (
+            "tf-idf", 
+            TfidfVectorizer(
+                ngram_range=(1, 2),
+                max_features=5000,
+                min_df = 2,
+            ),
+        ),
+    ])
 
+    num_transformer = Pipeline([('scaler', StandardScaler())])
+
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('text', text_pipeline, "text"),
+            ('num', num_transformer, ["num_urls", "has_ip_url", "has_shortener", "max_urls_len"]),
+        ]
+    )
+
+    # Full model pipeline
+    full_pipeline = Pipeline(
+        [('preprocessor', preprocessor), ('clf', LogisticRegression(max_iter=1000))]
+    )
+
+    return full_pipeline
 
 # ============================================================
 # TODO 4: Training baseline
@@ -121,4 +150,7 @@ def predict(subject: str, body: str) -> dict:
 if __name__ == "__main__":
     df = load_data("training/dataset/CEAS_08.csv")
     X_train, X_test, y_train, y_test = split_data(df)
+    pipe = build_pipeline()
+    hasil = pipe.named_steps["preprocessor"].fit_transform(X_train)
+    print(hasil.shape)
 
