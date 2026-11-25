@@ -91,7 +91,8 @@ def build_pipeline(model=None):
     preprocessor = ColumnTransformer(
         transformers=[
             ('text', text_pipeline, "text"),
-            ('num', num_transformer, ["num_urls", "has_ip_url", "has_shortener", "max_urls_len"]),
+            ('num', num_transformer, ["num_urls", "max_urls_len"]),
+            ('bin', "passthrough", ["has_ip_url", "has_shortener"]),
         ]
     )
 

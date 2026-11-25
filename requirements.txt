@@ -3,3 +3,5 @@ pydantic-settings
 pandas
 scikit-learn
 xgboost
+fastapi
+uvicorn

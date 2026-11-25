@@ -44,5 +44,5 @@ def predict(subject: str, body: str) -> dict:
     return {
         "label": label,
         "label_name": "phishing" if label == 1 else "aman",
-        "score": round(score, 4),
+        "score": score,
     }
