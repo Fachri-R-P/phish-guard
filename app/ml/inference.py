@@ -46,3 +46,6 @@ def predict(subject: str, body: str) -> dict:
         "label_name": "phishing" if label == 1 else "aman",
         "score": score,
     }
+
+def model_loaded() -> bool:
+    return _model is not None
